@@ -24,13 +24,13 @@ class RegistrationForm(FlaskForm):
     user_type=RadioField('User Type', choices=['Customer', 'Seller'], validators=[DataRequired()])
     submit = SubmitField('Register!')
 
-    def validate_email(self, field):
-        if User.query.filter_by(email=field.data).first():
-            raise ValidationError('Your email has been registered already!')
-
-    def validate_username(self, field):
-        if User.query.filter_by(username=field.data).first():
-            raise ValidationError('Sorry, that username is taken!')
+    def validate_email(self, email):
+        if User.query.filter_by(email=self.email.data).first():
+            raise ValidationError('Email has been registered')
+            
+    def validate_username(self, username):
+        if User.query.filter_by(username=self.username.data).first():
+            raise ValidationError('Username has been registered')
 
 
 class UpdateUserForm(FlaskForm):
@@ -39,13 +39,15 @@ class UpdateUserForm(FlaskForm):
     picture = FileField('Update Profile Picture', validators=[FileAllowed(['jpg', 'png', 'jpeg'])])
     submit = SubmitField('Update')
 
-    def validate_email(self, field):
-        if User.query.filter_by(email=field.data).first():
-            raise ValidationError('Your email has been registered already!')
+    def validate_email(self, email):
+        if email.data != current_user.email:
+            if User.query.filter_by(email=email.data).first():
+                raise ValidationError('Email has been registered')
 
-    def validate_username(self, field):
-        if User.query.filter_by(username=field.data).first():
-            raise ValidationError('Sorry, that username is taken!')
+    def validate_username(self, username):
+        if username.data != current_user.username:
+            if User.query.filter_by(username=username.data).first():
+                raise ValidationError('Username has been registered')
 
 
 class AddProductForm(FlaskForm):

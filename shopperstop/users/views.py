@@ -1,9 +1,9 @@
-from flask import render_template, url_for, flash, redirect, request, Blueprint
+from flask import render_template, url_for, flash, redirect, request, Blueprint, abort
 from flask_login import login_user, current_user, logout_user, login_required
 from shopperstop import db
 from werkzeug.security import generate_password_hash,check_password_hash
 from shopperstop.models import User, Product, Cart
-from shopperstop.users.forms import RegistrationForm, LoginForm, UpdateUserForm
+from shopperstop.users.forms import RegistrationForm, LoginForm, UpdateUserForm, AddProductForm, UpdateProductForm
 from shopperstop.users.picture_handler import add_profile_pic
 
 
@@ -53,16 +53,15 @@ def account():
     form = UpdateUserForm()
 
     if form.validate_on_submit():
-        user = User.query.filter_by(username=current_user.username).first()
+
         if form.picture.data:
             username = current_user.username
             pic = add_profile_pic(form.picture.data,username)
-            user.profile_image = pic
+            current_user.profile_image = pic
 
-        user.username = form.username.data
-        user.email = form.email.data
+        current_user.username = form.username.data
+        current_user.email = form.email.data
         db.session.commit()
-        flash('User Account Updated')
         return redirect(url_for('users.account'))
 
     elif request.method == 'GET':
@@ -88,5 +87,5 @@ def shop_view(username):
     if current_user.user_type=='Customer':
         abort(403)
     user=User.query.filter_by(username=username).first_or_404()
-    shop=Product.query.filter_by(userid=current_user.id)
+    shop=Product.query.filter_by(sell_id=current_user.id)
     return render_template('shop.html', shop=shop, user=user)
