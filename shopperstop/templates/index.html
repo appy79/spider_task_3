@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="jumbotron">
+    <h1>ShopperStop</h1>
+    <p>Welcome to the the ShopperStop website</p>
+  </div>
+
+  <div class="container">
+
+    {# Go through each blog post #}
+    {% for product in products.items %}
+
+    <div class="card" >
+
+      <div class="card-body">
+
+
+        <h2><a class="card-title" href="  {{ url_for('products.product', product_id=product.id) }}">{{ product.product_name }}</a></h2>
+        <p>Price : {{ product.price }}</p>
+      </div>
+    </div>
+
+   {% endfor %}
+
+
+
+{% endblock %}

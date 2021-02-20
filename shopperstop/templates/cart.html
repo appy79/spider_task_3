@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+  <div class="jumbotron">
+    <div align='center'>
+      <h1 >Welcome to the page for {{user.username}}</h1>
+      <img align='center' src="{{ url_for('static', filename='profile_pics/' + user.profile_image) }}">
+    </div>
+  </div>
+
+
+{% for product in cart.items %}
+
+          <h2>Product ID: {{ product.productid }}</a></h2>
+          <h2>Quantity: {{product.quantity}}</h2>
+
+{% endfor %}
+
+
+</div>
+
+{% endblock content %}
