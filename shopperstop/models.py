@@ -15,7 +15,8 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(64), unique=True, index=True)
     password_hash = db.Column(db.String(128))
     user_type=db.Column(db.String(128))
-    cart = db.relationship('Product', backref='owner', lazy=True)
+    cart = db.relationship('Cart', backref='user_cart', lazy=True)
+    sold_by = db.relationship('Product', backref='seller', lazy=True)
 
     def __init__(self, email, username, password,user_type):
         self.email = email
@@ -30,10 +31,7 @@ class User(db.Model, UserMixin):
         return f"{self.username}{self.user_type}{self.id}"
 
 class Product(db.Model):
-    users = db.relationship(User)
-
     id = db.Column(db.Integer, primary_key=True)
-    cus_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     sell_id=db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     product_name = db.Column(db.String(140), nullable=False)
     product_desc=db.Column(db.String, nullable=False)

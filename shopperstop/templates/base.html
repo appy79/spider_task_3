@@ -20,7 +20,7 @@
     {% if current_user.is_authenticated %}
     <li class="nav-link"><a href="{{ url_for('users.logout') }}">Log Out</a></li>
     <li class="nav-link"><a href="{{ url_for('users.account') }}">Account</a></li>
-    <li class="nav-link"><a href="{{ url_for('users.cart_view') }}">View Cart</a></li>
+    <li class="nav-link"><a href="{{ url_for('users.cart_view', username=current_user.username) }}">View Cart</a></li>
     {% else %}
     <li class="nav-link"><a href="{{ url_for('users.login') }}">Log In</a></li>
     <li class="nav-link"><a href="{{ url_for('users.register') }}">Register</a></li>
