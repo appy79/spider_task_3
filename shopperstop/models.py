@@ -36,6 +36,7 @@ class Product(db.Model):
     product_name = db.Column(db.String(140), nullable=False)
     product_desc=db.Column(db.String, nullable=False)
     quantity=db.Column(db.Integer, nullable=False)
+    price=db.Column(db.Integer, nullable=False)
     product_image=db.Column(db.String(20), nullable=False, default='default_profile.png')
 
 
