@@ -1,7 +1,8 @@
 from shopperstop import db,login_manager
 from datetime import datetime
 from werkzeug.security import generate_password_hash,check_password_hash
-from flask_login import UserMixin
+from flask_login import UserMixin, current_user
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -40,10 +41,12 @@ class Product(db.Model):
     product_image=db.Column(db.String(20), nullable=False, default='default_profile.png')
 
 
-    def __init__(self, title, text, user_id):
-        self.title = title
-        self.text = text
-        self.user_id =user_id
+    def __init__(self, product_name, product_desc, quantity, price):
+        self.product_name = product_name
+        self.product_desc = product_desc
+        self.quantity = quantity
+        self.price = price
+        self.sell_id = current_user.id
 
 
     def __repr__(self):

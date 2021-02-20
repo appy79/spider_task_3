@@ -1,8 +1,8 @@
-"""creating tables
+"""Fixed init of product
 
-Revision ID: fdb1f2b7f91b
+Revision ID: da1b146cee1f
 Revises: 
-Create Date: 2021-02-20 15:16:12.052876
+Create Date: 2021-02-20 18:49:09.403316
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'fdb1f2b7f91b'
+revision = 'da1b146cee1f'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -31,13 +31,12 @@ def upgrade():
     op.create_index(op.f('ix_user_username'), 'user', ['username'], unique=True)
     op.create_table('product',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('cus_id', sa.Integer(), nullable=True),
     sa.Column('sell_id', sa.Integer(), nullable=False),
     sa.Column('product_name', sa.String(length=140), nullable=False),
     sa.Column('product_desc', sa.String(), nullable=False),
     sa.Column('quantity', sa.Integer(), nullable=False),
+    sa.Column('price', sa.Integer(), nullable=False),
     sa.Column('product_image', sa.String(length=20), nullable=False),
-    sa.ForeignKeyConstraint(['cus_id'], ['user.id'], ),
     sa.ForeignKeyConstraint(['sell_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id')
     )

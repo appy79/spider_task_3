@@ -89,3 +89,21 @@ def shop_view(username):
     user=User.query.filter_by(username=username).first_or_404()
     shop=Product.query.filter_by(sell_id=current_user.id)
     return render_template('shop.html', shop=shop, user=user)
+
+
+@users.route("/add_product", methods=['GET', 'POST'])
+@login_required
+def add_product():
+    if current_user.user_type=='Customer':
+        abort(403)
+    form = AddProductForm()
+    if form.validate_on_submit():
+        product = Product(product_name=form.product_name.data,
+                    product_desc=form.product_desc.data,
+                    price=form.price.data,
+                    quantity=form.quantity.data)
+
+        db.session.add(product)
+        db.session.commit()
+        return redirect(url_for('core.index'))
+    return render_template('add_product.html', form=form)

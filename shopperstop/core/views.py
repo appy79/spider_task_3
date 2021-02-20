@@ -5,7 +5,7 @@ core = Blueprint('core',__name__)
 
 @core.route('/')
 def index():
-    products = Product.query.order_by(Product.id.asc())
+    products = Product.query.order_by(Product.id.desc())
     return render_template('index.html',products=products)
 
 @core.route('/info')
