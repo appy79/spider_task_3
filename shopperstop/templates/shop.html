@@ -3,15 +3,22 @@
 <div class="container">
   <div class="jumbotron">
     <div align='center'>
-      <h1 >Welcome to the cart of {{user.username}}</h1>
+      <h1 >Welcome to the shop of {{user.username}}</h1>
     </div>
   </div>
 
 
-{% for product in shop.items %}
+{% for product in shop %}
 
-          <h2>Product ID: {{ product.productid }}</a></h2>
-          <h2>Quantity: {{product.quantity}}</h2>
+<div class="card" >
+
+  <div class="card-body">
+    <h5>Product Name: {{product.product_name}}</h5>
+    <p>{{product.product_desc}}</p>
+    <h5>Quantity: {{ product.quantity }}</h5>
+  </div>
+  
+</div>
 
 {% endfor %}
 
