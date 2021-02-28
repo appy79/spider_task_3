@@ -11,9 +11,6 @@ def add_product_pic(pic_upload,product_name):
 
     filepath = os.path.join(current_app.root_path, 'static/product_pics', storage_filename)
 
-    if filepath:
-        os.remove(filepath)
-
     output_size = (200, 200)
 
     pic = Image.open(pic_upload)

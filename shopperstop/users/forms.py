@@ -27,7 +27,7 @@ class RegistrationForm(FlaskForm):
     def validate_email(self, email):
         if User.query.filter_by(email=self.email.data).first():
             raise ValidationError('Email has been registered')
-            
+
     def validate_username(self, username):
         if User.query.filter_by(username=self.username.data).first():
             raise ValidationError('Username has been registered')
@@ -55,6 +55,7 @@ class AddProductForm(FlaskForm):
     product_desc = TextAreaField('Product Description', validators=[DataRequired()])
     price= IntegerField('Price', validators=[DataRequired()])
     quantity= IntegerField('Quantity', validators=[DataRequired()])
+    picture = FileField('Product Picture', validators=[FileAllowed(['jpg', 'png', 'jpeg'])])
     submit = SubmitField('Add Item')
 
 

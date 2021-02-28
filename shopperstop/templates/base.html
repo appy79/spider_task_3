@@ -20,9 +20,13 @@
     {% if current_user.is_authenticated %}
     <li class="nav-link"><a href="{{ url_for('users.logout') }}">Log Out</a></li>
     <li class="nav-link"><a href="{{ url_for('users.account') }}">Account</a></li>
-    <li class="nav-link"><a href="{{ url_for('users.cart_view', username=current_user.username) }}">View Cart</a></li>
+    {% if current_user.user_type=='Customer' %}
+      <li class="nav-link"><a href="{{ url_for('users.cart_view', username=current_user.username) }}">View Cart</a></li>
+    {% endif %}
+    {% if current_user.user_type=='Seller' %}
     <li class="nav-link"><a href="{{ url_for('users.shop_view', username=current_user.username) }}">View Shop</a></li>
     <li class="nav-link"><a href="{{ url_for('users.add_product') }}">Add Product</a></li>
+    {% endif %}
     {% else %}
     <li class="nav-link"><a href="{{ url_for('users.login') }}">Log In</a></li>
     <li class="nav-link"><a href="{{ url_for('users.register') }}">Register</a></li>

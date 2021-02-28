@@ -12,12 +12,27 @@
     <div class="card" >
 
       <div class="card-body">
+        <table>
+          <tr>
+            <td>
+              <h2>{{ product.product_name }}</h2>
+              <p>{{ product.product_desc }}</p>
+              <p>Price : {{ product.price }}</p>
+              <p>Only {{product.quantity}} left! Hurry</p>
+            </td>
+            <td>
+              <img align='center' src="{{ url_for('static', filename='product_pics/' + product.product_image) }}">
+            </td>
+            {% if current_user.user_type=='Customer' %}
 
+            <td>
+              <a href="add_to_cart">Add to cart</a>
+            </td>
 
-        <h2>{{ product.product_name }}</h2>
-        <p>{{ product.product_desc }}</p>
-        <p>Price : {{ product.price }}</p>
-        <p>Only {{product.quantity}} left! Hurry</p>
+            {% endif %}
+          </tr>
+        </table>
+
       </div>
     </div>
 

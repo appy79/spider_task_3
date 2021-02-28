@@ -41,11 +41,12 @@ class Product(db.Model):
     product_image=db.Column(db.String(20), nullable=False, default='default_profile.png')
 
 
-    def __init__(self, product_name, product_desc, quantity, price):
+    def __init__(self, product_name, product_desc, quantity, price, product_image):
         self.product_name = product_name
         self.product_desc = product_desc
         self.quantity = quantity
         self.price = price
+        self.product_image=product_image
         self.sell_id = current_user.id
 
 

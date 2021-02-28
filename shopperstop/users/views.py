@@ -5,6 +5,7 @@ from werkzeug.security import generate_password_hash,check_password_hash
 from shopperstop.models import User, Product, Cart
 from shopperstop.users.forms import RegistrationForm, LoginForm, UpdateUserForm, AddProductForm, UpdateProductForm
 from shopperstop.users.picture_handler import add_profile_pic
+from shopperstop.users.pro_picture_handler import add_product_pic
 
 
 users = Blueprint('users', __name__)
@@ -98,12 +99,50 @@ def add_product():
         abort(403)
     form = AddProductForm()
     if form.validate_on_submit():
+        product_name=form.product_name.data
+        pic=add_product_pic(form.picture.data,product_name)
         product = Product(product_name=form.product_name.data,
                     product_desc=form.product_desc.data,
                     price=form.price.data,
-                    quantity=form.quantity.data)
+                    quantity=form.quantity.data,
+                    product_image = pic
+                    )
 
         db.session.add(product)
         db.session.commit()
         return redirect(url_for('core.index'))
     return render_template('add_product.html', form=form)
+
+@users.route("/<product_id>_update", methods=['GET','POST'])
+@login_required
+def update_product(product_id):
+    if current_user.user_type=='Customer':
+        abort(403)
+    product=Product.query.filter_by(id=product_id).first_or_404()
+
+
+    form = UpdateProductForm()
+
+    if form.validate_on_submit():
+
+        if form.picture.data:
+            product_name=form.product_name.data
+            pic=add_product_pic(form.picture.data,product_name)
+            product.product_image = pic
+
+        product.product_name = form.product_name.data
+        product.product_desc = form.product_desc.data
+        product.price=form.price.data
+        product.quantity=form.quantity.data
+        db.session.commit()
+        return redirect(url_for('users.shop_view', username=current_user.username))
+
+    elif request.method == 'GET':
+        form.product_name.data = product.product_name
+        form.product_desc.data = product.product_desc
+        form.price.data = product.price
+        form.quantity.data = product.quantity
+
+    product_image = url_for('static', filename='product_pics/' + product.product_image)
+
+    return render_template('update_product.html', product=product, form=form)

@@ -13,15 +13,27 @@
 <div class="card" >
 
   <div class="card-body">
-    <h5>Product Name: {{product.product_name}}</h5>
-    <p>{{product.product_desc}}</p>
-    <h5>Quantity: {{ product.quantity }}</h5>
+    <table>
+      <tr>
+        <td>
+          <h2>{{ product.product_name }}</h2>
+          <p>{{ product.product_desc }}</p>
+          <p>Price : {{ product.price }}</p>
+          <p>Only {{product.quantity}} left! Hurry</p>
+        </td>
+        <td>
+          <img align='center' src="{{ url_for('static', filename='product_pics/' + product.product_image) }}">
+        </td>
+        <td>
+          <a href="{{ url_for('users.update_product', product_id=product.id) }}">Update Product</a>
+        </td>
+      </tr>
+    </table>
   </div>
-  
+
 </div>
 
 {% endfor %}
-
 
 </div>
 
