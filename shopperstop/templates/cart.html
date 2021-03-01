@@ -7,15 +7,48 @@
     </div>
   </div>
 
+  <div class="container">
 
-{% for product in cart %}
+    {% for product in cart %}
 
-          <h2>Product ID: {{ product.productid }}</a></h2>
-          <h2>Quantity: {{product.quantity}}</h2>
+    <div class="card" >
 
-{% endfor %}
+      <div class="card-body">
+        <table>
+          <tr>
+            <td>
+              <h2>{{ product.prod.product_name }}</h2>
+              <p>You have {{product.quantity}} in cart</p>
+            </td>
+            <td>
+              <img align='center' src="{{ url_for('static', filename='product_pics/' + product.prod.product_image) }}">
+            </td>
+            <td>
+              <h6>Amount : {{ product.prod.price*product.quantity }}</h6>
+            </td>
+            <td>
+              <form method="post" action="{{ url_for('users.cart_edit', product_id=product.prod.id )}}">
+                {{ qform.hidden_tag() }}
+                {{ qform.quantity.label }}{{ qform.quantity() }}
+                {{ qform.submit() }}
+              </form>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+   {% endfor %}
+
+   <h3>Total Amount: {{ total }}</h3>
+   <form action="index.html" method="post">
+     {{ oform.hidden_tag() }}
+     {{oform.name.label}}{{oform.name()}}
+     {{oform.address.label}}{{oform.address()}}
+     {{oform.phone.label}}{{oform.phone()}}
+     {{oform.submit()}}
+
+   </form>
 
 
-</div>
-
-{% endblock content %}
+  {% endblock %}

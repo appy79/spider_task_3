@@ -66,3 +66,17 @@ class UpdateProductForm(FlaskForm):
     quantity= IntegerField('Quantity', validators=[DataRequired()])
     picture = FileField('Update Product Picture', validators=[FileAllowed(['jpg', 'png', 'jpeg'])])
     submit = SubmitField('Update Item')
+
+class QuantityForm(FlaskForm):
+    quantity=IntegerField('Quantity', validators=[DataRequired()])
+    submit=SubmitField('Add to cart')
+
+class QuantityEdit(FlaskForm):
+    quantity=IntegerField('Quantity', validators=[DataRequired()])
+    submit=SubmitField('Change quantity')
+
+class OrderForm(FlaskForm):
+    name=StringField('Receiver Name', validators=[DataRequired()])
+    address=TextAreaField('Address', validators=[DataRequired()])
+    phone=StringField('Phone Number', validators=[DataRequired()])
+    submit=SubmitField('Checkout')

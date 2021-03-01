@@ -3,7 +3,7 @@ from flask_login import login_user, current_user, logout_user, login_required
 from shopperstop import db
 from werkzeug.security import generate_password_hash,check_password_hash
 from shopperstop.models import User, Product, Cart
-from shopperstop.users.forms import RegistrationForm, LoginForm, UpdateUserForm, AddProductForm, UpdateProductForm
+from shopperstop.users.forms import RegistrationForm, LoginForm, UpdateUserForm, AddProductForm, UpdateProductForm, QuantityForm, QuantityEdit, OrderForm
 from shopperstop.users.picture_handler import add_profile_pic
 from shopperstop.users.pro_picture_handler import add_product_pic
 
@@ -34,8 +34,12 @@ def login():
         user = User.query.filter_by(email=form.email.data).first()
         if user.check_password(form.password.data) and user is not None:
             login_user(user)
-            flash('Logged in successfully.')
-            return redirect('index.html')
+            name=user.username
+            if user.user_type=='Customer':
+                dash=name+'_cart'
+            else:
+                dash=name+'_shop'
+            return redirect(dash)
     return render_template('login.html', form=form)
 
 
@@ -73,14 +77,35 @@ def account():
     return render_template('account.html', profile_image=profile_image, form=form)
 
 
+
 @users.route("/<username>_cart")
 @login_required
 def cart_view(username):
     if current_user.user_type=='Seller':
         abort(403)
+    oform=OrderForm()
+    qform=QuantityEdit()
     user = User.query.filter_by(username=username).first_or_404()
-    cart = Cart.query.filter_by(userid=current_user.id)
-    return render_template('cart.html', cart=cart, user=user)
+    cart = Cart.query.filter_by(userid=current_user.id).all()
+    total=0
+    for product in cart:
+            total+=product.prod.price*product.quantity
+    return render_template('cart.html', cart=cart, user=user, total=total, qform=qform, oform=oform)
+
+
+
+@users.route("/<product_id>_cart_edit", methods=['POST','GET'])
+@login_required
+def cart_edit(product_id):
+    if current_user.user_type=='Seller':
+        abort(403)
+    editpro=Cart.query.filter_by(userid=current_user.id, productid=product_id).first()
+    qform=QuantityEdit()
+    if qform.validate_on_submit():
+        editpro.quantity=qform.quantity.data
+        db.session.commit()
+        return redirect(url_for('users.cart_view', username=current_user.username))
+
 
 @users.route("/<username>_shop")
 @login_required
@@ -146,3 +171,33 @@ def update_product(product_id):
     product_image = url_for('static', filename='product_pics/' + product.product_image)
 
     return render_template('update_product.html', product=product, form=form)
+
+@users.route('/<product_id>_delete')
+@login_required
+def delete_product(product_id):
+    product=Product.query.filter_by(id=product_id).first_or_404()
+    if product.sell_id != current_user.id:
+        abort(403)
+    product.quantity=0
+    db.session.commit()
+    return redirect(url_for('users.shop_view', username=current_user.username))
+
+@users.route('/<product_id>_cart',methods=['GET','POST'])
+@login_required
+def add_to_cart(product_id):
+    if current_user.user_type=='Seller':
+        abort(403)
+    product=Product.query.filter_by(id=product_id).first_or_404()
+    exists=Cart.query.filter_by(productid=product_id, userid=current_user.id).first()
+    form=QuantityForm()
+    if form.validate_on_submit():
+        if exists:
+            exists.quantity+=form.quantity.data
+        else:
+            cart=Cart(userid=current_user.id,
+                        productid=product_id,
+                        quantity=form.quantity.data)
+            db.session.add(cart)
+        db.session.commit()
+        return redirect(url_for('core.index'))
+    return render_template('index.html', form=form)

@@ -27,6 +27,7 @@
     <li class="nav-link"><a href="{{ url_for('users.shop_view', username=current_user.username) }}">View Shop</a></li>
     <li class="nav-link"><a href="{{ url_for('users.add_product') }}">Add Product</a></li>
     {% endif %}
+    <li class="nav-link">Howdy, {{current_user.username}}</li>
     {% else %}
     <li class="nav-link"><a href="{{ url_for('users.login') }}">Log In</a></li>
     <li class="nav-link"><a href="{{ url_for('users.register') }}">Register</a></li>

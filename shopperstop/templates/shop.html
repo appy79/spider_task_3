@@ -14,20 +14,21 @@
 
   <div class="card-body">
     <table>
-      <tr>
-        <td>
-          <h2>{{ product.product_name }}</h2>
-          <p>{{ product.product_desc }}</p>
-          <p>Price : {{ product.price }}</p>
-          <p>Only {{product.quantity}} left! Hurry</p>
-        </td>
-        <td>
-          <img align='center' src="{{ url_for('static', filename='product_pics/' + product.product_image) }}">
-        </td>
-        <td>
-          <a href="{{ url_for('users.update_product', product_id=product.id) }}">Update Product</a>
-        </td>
-      </tr>
+        <tr>
+          <td>
+            <h2>{{ product.product_name }}</h2>
+            <p>{{ product.product_desc }}</p>
+            <p>Price : {{ product.price }}</p>
+            <p>In stock: {{product.quantity}}</p>
+          </td>
+          <td>
+            <img align='center' src="{{ url_for('static', filename='product_pics/' + product.product_image) }}">
+          </td>
+        </tr>
+        <tr>
+          <td><a href="{{ url_for('users.update_product', product_id=product.id) }}">Update Product</a></td>
+          <td><a href="{{ url_for('users.delete_product', product_id=product.id) }}">Delete Product</a></td>
+        </tr>
     </table>
   </div>
 
