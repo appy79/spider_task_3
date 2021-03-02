@@ -60,6 +60,11 @@ class Cart(db.Model):
     quantity = db.Column(db.Integer, nullable=False)
     prod=db.relationship("Product", backref="prod", lazy=True)
 
+    def __init__(self, userid, productid, quantity):
+        self.userid=userid
+        self.productid=productid
+        self.quantity=quantity
+
     def __repr__(self):
         return f"Cart('{self.userid}', '{self.productid}, '{self.quantity}')"
 
@@ -68,6 +73,23 @@ class Order(db.Model):
     order_date = db.Column(db.DateTime, nullable=False)
     total_price = db.Column(db.DECIMAL, nullable=False)
     userid = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    name=db.Column(db.String(140), nullable=False)
+    address=db.Column(db.String, nullable=False)
+    phone=db.Column(db.String(140), nullable=False)
+    sell_id=db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    status=db.Column(db.String, nullable=False, default='Pending')
+    sell_user=db.relationship("User", backref='sell_id', lazy=True, foreign_keys=[userid])
+    cus_user=db.relationship("User", backref='userid', lazy=True, foreign_keys=[sell_id])
+
+    def __init__(self, total_price, name, address, phone,sell_id):
+        self.order_date=datetime.now()
+        self.total_price=total_price
+        self.userid=current_user.id
+        self.name=name
+        self.sell_id=sell_id
+        self.address=address
+        self.phone=phone
+
 
     def __repr__(self):
         return f"Order('{self.id}', '{self.order_date}','{self.total_price}','{self.userid}'')"
@@ -77,6 +99,13 @@ class OrderedProduct(db.Model):
     orderid = db.Column(db.Integer,db.ForeignKey('order.id'), nullable=False)
     productid = db.Column(db.Integer,db.ForeignKey('product.id'), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
+    pro = db.relationship("Product", backref="pro", lazy=True)
+
+    def __init__(self, orderid, productid, quantity):
+        self.orderid=orderid
+        self.productid=productid
+        self.quantity=quantity
+
 
     def __repr__(self):
         return f"Order('{self.id}', '{self.orderid}','{self.productid}','{self.quantity}')"

@@ -2,7 +2,7 @@ from flask import render_template, url_for, flash, redirect, request, Blueprint,
 from flask_login import login_user, current_user, logout_user, login_required
 from shopperstop import db
 from werkzeug.security import generate_password_hash,check_password_hash
-from shopperstop.models import User, Product, Cart
+from shopperstop.models import User, Product, Cart, Order, OrderedProduct
 from shopperstop.users.forms import RegistrationForm, LoginForm, UpdateUserForm, AddProductForm, UpdateProductForm, QuantityForm, QuantityEdit, OrderForm
 from shopperstop.users.picture_handler import add_profile_pic
 from shopperstop.users.pro_picture_handler import add_product_pic
@@ -10,6 +10,7 @@ from shopperstop.users.pro_picture_handler import add_product_pic
 
 users = Blueprint('users', __name__)
 
+#REGISTER
 @users.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegistrationForm()
@@ -26,6 +27,8 @@ def register():
         return redirect(url_for('users.login'))
     return render_template('register.html', form=form)
 
+
+#LOGIN
 @users.route('/login', methods=['GET', 'POST'])
 def login():
 
@@ -44,13 +47,15 @@ def login():
 
 
 
-
+#LOGOUT
 @users.route("/logout")
 def logout():
     logout_user()
     return redirect(url_for('core.index'))
 
 
+
+#UPDATE_USER
 @users.route("/account", methods=['GET', 'POST'])
 @login_required
 def account():
@@ -77,7 +82,8 @@ def account():
     return render_template('account.html', profile_image=profile_image, form=form)
 
 
-
+total=0
+#CART DISPLAY
 @users.route("/<username>_cart")
 @login_required
 def cart_view(username):
@@ -87,13 +93,13 @@ def cart_view(username):
     qform=QuantityEdit()
     user = User.query.filter_by(username=username).first_or_404()
     cart = Cart.query.filter_by(userid=current_user.id).all()
-    total=0
+    global total
     for product in cart:
-            total+=product.prod.price*product.quantity
+        total+=product.prod.price*product.quantity
     return render_template('cart.html', cart=cart, user=user, total=total, qform=qform, oform=oform)
 
 
-
+#EDITING CART
 @users.route("/<product_id>_cart_edit", methods=['POST','GET'])
 @login_required
 def cart_edit(product_id):
@@ -107,6 +113,8 @@ def cart_edit(product_id):
         return redirect(url_for('users.cart_view', username=current_user.username))
 
 
+
+#SHOP OF MERCHANT
 @users.route("/<username>_shop")
 @login_required
 def shop_view(username):
@@ -117,6 +125,8 @@ def shop_view(username):
     return render_template('shop.html', shop=shop, user=user)
 
 
+
+#ADDING A PRODUCT
 @users.route("/add_product", methods=['GET', 'POST'])
 @login_required
 def add_product():
@@ -138,6 +148,8 @@ def add_product():
         return redirect(url_for('core.index'))
     return render_template('add_product.html', form=form)
 
+
+#UPDATING A PRODUCT
 @users.route("/<product_id>_update", methods=['GET','POST'])
 @login_required
 def update_product(product_id):
@@ -172,6 +184,9 @@ def update_product(product_id):
 
     return render_template('update_product.html', product=product, form=form)
 
+
+
+#DELETING A PRODUCT
 @users.route('/<product_id>_delete')
 @login_required
 def delete_product(product_id):
@@ -182,6 +197,8 @@ def delete_product(product_id):
     db.session.commit()
     return redirect(url_for('users.shop_view', username=current_user.username))
 
+
+#ADD TO CART
 @users.route('/<product_id>_cart',methods=['GET','POST'])
 @login_required
 def add_to_cart(product_id):
@@ -201,3 +218,57 @@ def add_to_cart(product_id):
         db.session.commit()
         return redirect(url_for('core.index'))
     return render_template('index.html', form=form)
+
+
+#CHECKOUT
+@users.route('/checkout', methods=['GET','POST'])
+@login_required
+def checkout():
+    if current_user.user_type=='Seller':
+        abort(403)
+    qr=Cart.query.filter_by(userid=current_user.id).first()
+    pro=Product.query.filter_by(id=qr.productid).first()
+    oform=OrderForm()
+    global total
+    if oform.validate_on_submit():
+        order=Order(total_price=total,
+                    name=oform.name.data,
+                    address=oform.address.data,
+                    phone=oform.phone.data,
+                    sell_id=pro.sell_id)
+        db.session.add(order)
+        db.session.commit()
+        prod=Cart.query.filter_by(userid=current_user.id).all()
+        last_order=Order.query.filter_by(userid=current_user.id).first()
+        for pr in prod:
+            dec=Product.query.filter_by(id=pr.productid).first()
+            dec.quantity-=pr.quantity
+            ordproduct=OrderedProduct(orderid=last_order.id,
+                                    productid=pr.productid,
+                                    quantity=pr.quantity)
+            db.session.add(ordproduct)
+            db.session.delete(pr)
+            db.session.commit()
+        total=0
+        return redirect(url_for('core.index'))
+
+
+#CUSTOMER HISTORY
+@users.route('/<username>_purchase_history')
+@login_required
+def cust_history(username):
+    if current_user.user_type=='Seller':
+        abort(403)
+
+    orders=Order.query.filter_by().all()
+    return render_template('cust_history.html')
+
+
+#SELLER HISTORY
+@users.route('/<username>_sell_history')
+@login_required
+def sell_history(username):
+    if current_user.user_type=='Customer':
+        abort(403)
+    orders=Order.query.filter_by(sell_id=current_user.id).all()
+    return render_template('sell_history.html', orders=orders)

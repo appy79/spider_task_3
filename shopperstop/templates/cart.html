@@ -41,7 +41,7 @@
    {% endfor %}
 
    <h3>Total Amount: {{ total }}</h3>
-   <form action="index.html" method="post">
+   <form action="{{ url_for('users.checkout')}}" method="post">
      {{ oform.hidden_tag() }}
      {{oform.name.label}}{{oform.name()}}
      {{oform.address.label}}{{oform.address()}}

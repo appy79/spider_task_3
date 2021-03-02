@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="jumbotron">
+    <p>Order History of seller {{current_user.username}}</p>
+  </div>
+
+  <div class="container">
+
+    {% for ord in orders%}
+    <div class="card" >
+
+      <div class="card-body">
+        <h2>Username: {{ ord.cus_user.username }}</h2>
+        <h6>Email: {{ ord.cus_user.email }}</h6>
+        <p>Address: {{ ord.address }}</p>
+        <h6>Receiver Name: {{ ord.name }}</h6>
+        <h6>Order Date: {{ ord.order_date.strftime('%Y-%m-%d') }}</h6>
+        <a href="">Details</a>
+      </div>
+    </div>
+   {% endfor %}
+
+{% endblock %}
