@@ -15,7 +15,7 @@
         <p>Address: {{ ord.address }}</p>
         <h6>Receiver Name: {{ ord.name }}</h6>
         <h6>Order Date: {{ ord.order_date.strftime('%Y-%m-%d') }}</h6>
-        <a href="">Details</a>
+        <a href="{{ url_for('users.order_details', orderid=ord.id)}} ">Products Details</a>
       </div>
     </div>
    {% endfor %}

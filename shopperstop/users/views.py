@@ -6,6 +6,7 @@ from shopperstop.models import User, Product, Cart, Order, OrderedProduct
 from shopperstop.users.forms import RegistrationForm, LoginForm, UpdateUserForm, AddProductForm, UpdateProductForm, QuantityForm, QuantityEdit, OrderForm
 from shopperstop.users.picture_handler import add_profile_pic
 from shopperstop.users.pro_picture_handler import add_product_pic
+from sqlalchemy import desc
 
 
 users = Blueprint('users', __name__)
@@ -239,7 +240,7 @@ def checkout():
         db.session.add(order)
         db.session.commit()
         prod=Cart.query.filter_by(userid=current_user.id).all()
-        last_order=Order.query.filter_by(userid=current_user.id).first()
+        last_order=Order.query.filter_by(userid=current_user.id).order_by(desc(Order.order_date)).first()
         for pr in prod:
             dec=Product.query.filter_by(id=pr.productid).first()
             dec.quantity-=pr.quantity
@@ -259,9 +260,8 @@ def checkout():
 def cust_history(username):
     if current_user.user_type=='Seller':
         abort(403)
-
-    orders=Order.query.filter_by().all()
-    return render_template('cust_history.html')
+    orders=Order.query.filter_by(userid=current_user.id).all()
+    return render_template('cust_history.html', orders=orders)
 
 
 #SELLER HISTORY
@@ -272,3 +272,11 @@ def sell_history(username):
         abort(403)
     orders=Order.query.filter_by(sell_id=current_user.id).all()
     return render_template('sell_history.html', orders=orders)
+
+
+#ITEMS LISTING
+@users.route('/<orderid>_order_details')
+@login_required
+def order_details(orderid):
+    prods=OrderedProduct.query.filter_by(orderid=orderid).all()
+    return render_template('order_details.html', prods=prods)

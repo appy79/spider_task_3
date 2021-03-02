@@ -78,8 +78,8 @@ class Order(db.Model):
     phone=db.Column(db.String(140), nullable=False)
     sell_id=db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     status=db.Column(db.String, nullable=False, default='Pending')
-    sell_user=db.relationship("User", backref='sell_id', lazy=True, foreign_keys=[userid])
-    cus_user=db.relationship("User", backref='userid', lazy=True, foreign_keys=[sell_id])
+    sell_user=db.relationship("User", lazy=True, foreign_keys=[sell_id])
+    cus_user=db.relationship("User", lazy=True, foreign_keys=[userid])
 
     def __init__(self, total_price, name, address, phone,sell_id):
         self.order_date=datetime.now()

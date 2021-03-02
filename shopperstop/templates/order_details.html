@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="jumbotron">
+    <h2>Order Details</h2>
+  </div>
+
+  <div class="container">
+
+    {% for prod in prods%}
+    <div class="card" >
+
+      <div class="card-body">
+        <table>
+          <tr>
+            <td>
+              <h2>{{ prod.pro.product_name }}</h2>
+              <p>{{ prod.pro.product_desc }}</p>
+            </td>
+            <td>
+              <img align='center' src="{{ url_for('static', filename='product_pics/' + prod.pro.product_image) }}">
+            </td>
+            <td>
+              <p>Quantity Purchased: {{ prod.quantity}}</p>
+              <p>Amount : {{ prod.pro.price*prod.quantity }}</p>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+   {% endfor %}
+
+{% endblock %}
