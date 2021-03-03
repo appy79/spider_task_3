@@ -28,6 +28,7 @@
     <li class="nav-link"><a href="{{ url_for('users.shop_view', username=current_user.username) }}">View Shop</a></li>
     <li class="nav-link"><a href="{{ url_for('users.add_product') }}">Add Product</a></li>
     <li class="nav-link"><a href="{{ url_for('users.sell_history', username=current_user.username) }}">Order History</a></li>
+    <li class="nav-link"><a href="{{ url_for('users.stats', username=current_user.username) }}">Statistics</a></li>
     {% endif %}
     <li class="nav-link">Howdy, {{current_user.username}}</li>
     {% else %}

@@ -1,7 +1,8 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, RadioField, TextAreaField, IntegerField
-from wtforms.validators import DataRequired, Email, EqualTo
+from wtforms import StringField, PasswordField, SubmitField, RadioField, TextAreaField, IntegerField, validators
+from wtforms.validators import DataRequired, Email, EqualTo, Length
 from wtforms import ValidationError
+from wtforms_validators import AlphaNumeric
 from flask_wtf.file import FileField, FileAllowed
 
 from flask_login import current_user
@@ -18,8 +19,8 @@ class LoginForm(FlaskForm):
 
 class RegistrationForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(),Email()])
-    username = StringField('Username', validators=[DataRequired()])
-    password = PasswordField('Password', validators=[DataRequired(), EqualTo('pass_confirm', message='Passwords Must Match!')])
+    username = StringField('Username', validators=[DataRequired(), AlphaNumeric()])
+    password = PasswordField('Password', validators=[DataRequired(), EqualTo('pass_confirm', message='Passwords Must Match!'), Length(min=6, max=30, message='Password should be between 6 and 30 characters long'), AlphaNumeric()] )
     pass_confirm = PasswordField('Confirm password', validators=[DataRequired()])
     user_type=RadioField('User Type', choices=['Customer', 'Seller'], validators=[DataRequired()])
     submit = SubmitField('Register!')

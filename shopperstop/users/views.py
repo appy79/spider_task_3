@@ -8,6 +8,14 @@ from shopperstop.users.picture_handler import add_profile_pic
 from shopperstop.users.pro_picture_handler import add_product_pic
 from sqlalchemy import desc
 
+import plotly
+from plotly import graph_objs as go
+import pandas as pd
+import json
+
+
+
+
 
 users = Blueprint('users', __name__)
 
@@ -280,3 +288,32 @@ def sell_history(username):
 def order_details(orderid):
     prods=OrderedProduct.query.filter_by(orderid=orderid).all()
     return render_template('order_details.html', prods=prods)
+
+
+#PLOTTING GRAPH
+def create_plot():
+    orders=Order.query.filter_by(sell_id=current_user.id).all()
+    N = len(orders)
+    x = [ord.order_date for ord in orders]
+    y = [ord.total_price for ord in orders]
+    df = pd.DataFrame({'x': x, 'y': y}) # creating a sample dataframe
+
+
+    data = [
+        go.Bar(
+            x=df['x'],
+            y=df['y']
+        )
+    ]
+
+    graphJSON = json.dumps(data, cls=plotly.utils.PlotlyJSONEncoder)
+
+    return graphJSON
+
+
+#GRAPH VIEW
+@users.route('/<username>_stats')
+@login_required
+def stats(username):
+    bar = create_plot()
+    return render_template('sell_stats.html',plot=bar)
