@@ -3,8 +3,17 @@
 <form method="POST">
     {{ form.hidden_tag() }}
     {{ form.email.label }} {{ form.email() }}<br>
+    {% for error in form.email.errors %}
+        <span style="color: red;">[{{ error }}]</span><br>
+    {% endfor %}
     {{ form.username.label }} {{ form.username() }}<br>
+    {% for error in form.username.errors %}
+        <span style="color: red;">[{{ error }}]</span><br>
+    {% endfor %}
     {{ form.password.label }} {{ form.password() }}<br>
+    {% for error in form.password.errors %}
+        <span style="color: red;">[{{ error }}]</span><br>
+    {% endfor %}
     {{ form.pass_confirm.label }} {{ form.pass_confirm() }}<br>
     {{ form.user_type.label }}{{ form.user_type() }}<br>
     {{ form.submit() }}
